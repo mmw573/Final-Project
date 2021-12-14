@@ -1,0 +1,223 @@
+---
+title: "Final Project Markdown file"
+author: "Madie Hassett"
+date: "12/14/2021"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+  bibliography: references.bib  
+---
+
+# Potential Disease Suppressiveness of Soils from Managed and Abandoned Orchards in New Hampshire
+
+#### *This research and data is from my Master’s project, which was completed in Summer 2021.*
+
+### Background Information:  
+
+#### The plant microbiome is the collection of microbes that directly and indirectly interacts with plants, so much so that it is often described as an extension of the plant genome [@Berendsen2012].While many of these microbes can be plant pathogens, many more of them are beneficial to plants, and can enhance nutrient availability, stimulate plant growth, enhance tolerance to stress, and directly or indirectly provide protection from plant pathogens [@Vacheron2013].  In agricultural settings, the presence of plant-pathogen suppressive soils has been directly attributed to the soil and associated plant microbiome [@Schlatter2017]. Different land management practices, including many agricultural practices, alter plant-associated microbial communities and could leave plants at a significant disadvantage if relationships with beneficial microbes are lost [@Toju2018].
+
+### The Study/Data:
+
+#### Abandoned agricultural sites, especially those that still contain the original agricultural product, are untapped resources that could be used to study how management effects plant and soil microbiomes over time.  There are very few studies comparing microbial community composition between abandoned and managed systems, and even less investigating function.  New Hampshire is home to many small managed and abandoned apple orchards, and many abandoned sites which still contain surprisingly healthy and productive apple trees.  
+### The goal of this project was to study managed and abandoned apple orchards as a model system to investigate the effects of site management history on microbe-mediated plant tolerance to biotic stress, possibly due to the presence of plant-pathogen suppressive soils. In this project we hypothesized that soil microbes collected from abandoned orchards would enhance plant growth and reduce soilborne plant disease severity compared to microbes collected from managed orchards and water controls. To test our hypothesis, we developed and utilized a radish damping-off microcosm bioassay.  The methods are summarized in Figure 1.
+
+![Figure 1: Quick Summary of Methods for Microcosm damping off bioassay](cwam methods.png)
+
+
+### Slurry Average Disease Ratings
+
+
+#### Each seedling was scored for R. solani symptoms on a 1-5 scale adapted from Krause et al 2001. [@Krause2001].  See examples of disease scale in Figure 2. Unfortunately, there were not significant differences between any of the treatments.  We suspect disease pressure may have been too high and future experiments will contain a lower dose of R. solani.  
+
+![Figure 2: Disease scale used for determining avergae disease severity per treatment. Scale ran from 1-5, with 5 representing seeds that never germinated or pre-emergence damping off (death).](scale.jpeg)
+
+
+
+```{r WHC, message=FALSE}
+library(ggplot2)
+
+ggplot(data = cwam12, aes(fill=slurry, y=avdisease, x=orchard)) + 
+    geom_col(position = position_dodge2(width = 0.9, preserve = "single")) + ggtitle("Average disease for infected pots Round 3") + theme() + labs(y= "Average disease", x = "Orchard") + scale_fill_brewer(palette = "Dark2") + coord_flip() + ylim(0,5) + labs(fill = "Microbial Community in Slurry")
+    
+ggplot(data = cwam12, aes(fill=slurry, y=avdisease, x=orchard)) + 
+    geom_col(position = position_dodge2(width = 0.9, preserve = "single")) + ggtitle("Average disease for infected pots Round 3") + theme() + labs(y= "Average disease", x = "Orchard") + scale_fill_brewer(palette = "Dark2") + ylim(0,5) + labs(fill = "Microbial Community in Slurry")
+
+```
+
+![Figure 3: Average disease severity for the infected pots.  None of the treatments had significantly different disease severity scores - which was disapointing but still informative.](Average disease horizontal.jpeg)
+
+
+
+### GIF of Disease Symptoms.  
+
+#### I made a GIF of the moderate-to-severe disease symptoms of R.solani on the radish stems/roots. I LOVE this for showing the progression of disease and will use this in future presentaions. I tried cropping the photos so they didn't have as much black space (they were taken with a phone through a dissecting scope so definitely a bit rough) but once I did that if wouldn't make a functional GIF - it just showed one photo. 
+
+
+```{r GIF of disease symptoms, message=FALSE}
+library(dplyr)
+library(purrr) 
+library(magick)
+
+rsolani_gif <- list.files(path = "C:/Users/mhass/OneDrive/Documents/R_class/Final Project/disease", pattern = "*.jpg", full.names = T) %>% 
+    map(image_read) %>% 
+    image_join() %>% 
+    image_annotate("Severe disease on R. solani stems", location = "+10+10", size = 20, color = "white") %>%
+    image_animate(fps=4) %>% 
+    image_write("Rsolani3.gif") 
+    
+## Note that croppng the photos to different sizes totally messes it up! 
+```
+
+![Figure 4: GIF of moderate to severe R. solani symptoms](Rsolani3.gif)
+### Dry Biomass for infected pots
+
+#### Biomass measurments are a way to measure plant growth.  In the pots infected with R. solani, visually, it looked like more plants growing bigger (taller and more leaves) in the pots inoculated with (1) Living microbes and (2) Living microbes from abandoned orchards.  Unfortunatley, this was too good to be true!  We still thought that the biomass measurments would show differences between the treatments, once we analyzed the data there were no significant difference to be found.  I think the figure below (figure 5) can be a bit misleading, becasue with a quick glance it kind of looks like one of the living slurries is far above the rest.  The next figure (Figure 7) addresses how we measured difference in germination rates.
+
+
+```{r GIF of disease symptoms, message=FALSE}
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("ggthemes") # Install
+library(ggthemes) # Load
+install.packages("patchwork")
+library("patchwork")
+install.packages("jpeg")
+library(jpeg)
+ggp <- ggplot(data = cwam15, aes(fill=slurry, y=biomass, x=orchard)) + 
+    geom_col(position = position_dodge2(width = 0.9, preserve = "single")) + ggtitle("Dry Biomass for R. solani infected pots - round 3") + theme() + labs(y= "biomass (g)", x = "Orchard") + scale_fill_brewer(palette = "Dark2") + coord_flip() + labs(fill = "Microbial Community in Slurry") + ylim(0,0.035)
+my_image <- readJPEG("C:/Users/mhass/OneDrive/Documents/R_class/Final Project/biomass.jpeg", native = TRUE)
+ggp_image <- ggp +                  # Combine plot & image
+  inset_element(p = my_image,
+                left = 0.95,
+                bottom = 0.95,
+                right = 0.70,
+                top = 0.70)
+ggp_image                           # Draw combined plot
+```
+
+![Figure 5: Dry Biomass for infected pots.  There were no significant difference in biomass among the different treatments, which was surprising, because visually the treatments looked very different.  This visual istelf is almost misleading, as it looks like a few treatments were higher than others, until you realise how small the scale on the x axis is!](biomass_infected_final.jpeg)
+
+
+
+### Emergence data
+
+#### Emergence data is essentially a measure of survival and germination.  If disease is severe, many seedlings will not even be able to emerge (also known as pre-emergent damping off). This is often what happens with our study pathogen, Rhizoctonia solani, when it infects seeds and seedlings, and we decided that it was a valuable data set to collect after our average disease data and biomass (plant growth) didn't tell us much. See figure 6 for an example of emergence counts collected in the study. 
+
+
+![Figure 6: Examples of Emergence counts. One seedling is equal to a score of 1, Two seedlings a score of 2, and so on...](emergence.jpg)
+
+
+``` {r emergence figure, message=FALSE}
+
+# Code for figure with the picture:
+
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("ggthemes") # Install
+library(ggthemes) # Load
+install.packages("patchwork")
+library("patchwork")
+install.packages("jpeg")
+library(jpeg)
+ggp <- ggplot(data = emergence4, aes(fill=slurry, y=meanpercent, x=orchard)) + 
+    geom_col(position = position_dodge2(width = 0.9, preserve = "single")) + ggtitle("Mean Percent Emergence of Infected Pots by Combined Orchard Type") + labs(y= "Mean Percent Emergence", x = "Orchard Type") + scale_fill_brewer(palette = "Dark2") + labs(fill = "Slurry contained:")
+my_image <- readJPEG("C:/Users/mhass/OneDrive/Documents/R_class/Final Project/emergence.JPG", native = TRUE)
+ggp_image <- ggp +                  # Combine plot & image
+  inset_element(p = my_image,
+                left = 0.95,
+                bottom = 0.95,
+                right = 0.70,
+                top = 0.70)
+ggp_image                           # Draw combined plot
+
+
+
+```
+
+
+![Figure 7: Emergence Data: Pots inoculated with slurries containing living microbes had significantly higher emergence counts (p < 0.05) than those inoculated with just sterile water.](Emergence_data_pic.jpeg)
+
+
+### Soil Characteristics: pH and Water Holding Capacity
+
+#### While I want to attribute the suppression of disease to the soil microbial communities, plant pathogens can also be effected by soil characteristics like pH and Water Holding capacity (and many other soil properties).  So this data was also collected at each of the study sites.  The following figures are for pH (Figure 8) and Water Holding capacity (Figure 9), both of which were significantly diffrerent between management types.
+
+
+``` {r pH box plot, message = FALSE}
+
+#Figure 4: Soil Characteristics pH
+
+# Load ggplot2
+library(ggplot2)
+install.packages("RColorBrewer")
+library("RColorBrewer")
+ 
+# Failed attempt at a background - was too big or covered the box plots!
+install.packages("magick")
+install.packages("ggimage")
+library("magick")
+library("ggimage")
+
+p <- ggplot(pH4, aes(x=Management, y=pH, fill=Management)) + geom_boxplot() + xlab("Orchard Type") + theme(legend.position="none") + ggtitle("Soil pH by Orchard Type") + scale_fill_brewer(palette = "Dark2")
+
+img = "C:/Users/mhass/OneDrive/Documents/R_class/Final Project/soil.jpeg"
+ggbackground(p,img,alpha=.3)
+
+
+#### Alright here we are:  photo in the corner!
+ggp <- ggplot(pH4, aes(x=Management, y=pH, fill=Management)) + geom_boxplot() + xlab("Orchard Type") + theme(legend.position="none") + ggtitle("Soil pH by Orchard Type") + scale_fill_brewer(palette = "Dark2")
+
+my_image <- readJPEG("C:/Users/mhass/OneDrive/Documents/R_class/Final Project/soil6.jpeg", native = TRUE)
+ggp_image <- ggp +                  # Combine plot & image
+  inset_element(p = my_image,
+                left = 0.95,
+                bottom = 0.95,
+                right = 0.75,
+                top = 0.75)
+  
+ggp_image
+```
+
+
+![Figure 8: Soil pH was significantly lower in Abandoned Orchards.](Soil_pH_final.jpeg)
+
+
+
+```{r WHC, message=FALSE}
+
+ggp <- ggplot(WHC1, aes(x=Management, y=WHC, fill=Management)) + geom_boxplot() + xlab("Orchard Type") + theme(legend.position="none") + ggtitle("Soil Water Holding Capacity by Orchard Type") + scale_fill_brewer(palette = "Dark2")
+
+my_image <- readJPEG("C:/Users/mhass/OneDrive/Documents/R_class/Final Project/soil6.jpeg", native = TRUE)
+ggp_image <- ggp +                  # Combine plot & image
+  inset_element(p = my_image,
+                left = 0.95,
+                bottom = 0.95,
+                right = 0.75,
+                top = 0.75)
+  
+ggp_image
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+![Figure 8: Water Holding capacity was significantly higher in Abandoned sites](WHC_final.jpeg)
+
+### Conclusions
+
+#### This was essentially a summary of a chapter of my master's thesis.  I also have soil micorbiome data (16S and ITS) from each site and from the slurries to analyze and add to this data, but that is not really what this assignment is about!
+#### Most of my research will invlove me making a lot of box plots and bar charts just like this, and I really enjoy the idea of adding pictures in the top right corner of the charts of what data is in that chart for presentations (espeshially powerpoints)  I was unable to figure it out for this assignment, but I am determined to figure out how to add a background photo to graphs without covering up the actual data in the process!  Additionally, making a GIF of a timelaspe of photos (like progressive pictures of disease symptoms) is definetly something I'll use in future presentions! I designed this project with the idea of "committee meeting update" in mind and I think I am close to that.  Thanks for a great semester! 
+
+### References:
+
+#### Not working at the moment - I added .bib file to the github page! But I did manually add them down below:
+
+
+##### Berendsen, R. L., Pieterse, C. M. J., & Bakker, P. A. H. M. (2012). The rhizosphere microbiome and plant health. Trends in Plant Science, 17(8), 478–486. https://doi.org/10.1016/j.tplants.2012.04.001
+##### Krause, M. S., Madden, L. V., & Hoitink, H. A. J. (2001). Effect of potting mix microbial carrying capacity on biological control of Rhizoctonia damping-off of radish and Rhizoctonia crown and root rot of poinsettia. Phytopathology, 91(11), 1116–1123. https://doi.org/10.1094/PHYTO.2001.91.11.1116
+##### Schlatter, D., Kinkel, L., Thomashow, L., Weller, D., & Paulitz, T. (2017). Disease suppressive soils: New insights from the soil microbiome. Phytopathology, 107(11), 1284–1297. https://doi.org/10.1094/PHYTO-03-17-0111-RVW
+##### Toju, H., Peay, K. G., Yamamichi, M., Narisawa, K., Hiruma, K., Naito, K., … Kiers, E. T. (2018). Core microbiomes for sustainable agroecosystems. Nature Plants, 4(5), 247–257. https://doi.org/10.1038/s41477-018-0139-4
+##### Vacheron, J., Desbrosses, G., Bouffaud, M. L., Touraine, B., Moënne-Loccoz, Y., Muller, D., … Prigent-Combaret, C. (2013). Plant growth-promoting rhizobacteria and root system functioning. Frontiers in Plant Science, 4(SEP), 1–19. https://doi.org/10.3389/fpls.2013.00356
+
+
